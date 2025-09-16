@@ -84,7 +84,7 @@ class GameManager:
         # Set game state to 'Starting'
         self.game_status = GameStatus.WELCOME
         
-        # Generate Seed 
+        # Generate Seed
         if seed is not None:
             self.seed = seed
         else:

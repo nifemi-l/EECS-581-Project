@@ -49,9 +49,9 @@ class Frontend():
         self.stdscr.addstr(0, 0, warning)
         self.stdscr.refresh()
 
-    def find_start_key(self): 
+    def find_start_key(self):
         os_name = platform.system()
-        if os_name == "Darwin": 
+        if os_name == "Darwin":
             return "Return"
         
         return "Enter"
@@ -99,6 +99,7 @@ class Frontend():
 
     def draw_board(self):
         """Draw the game board on the screen"""
+        
         self.stdscr.erase()
         sh, sw = self.stdscr.getmaxyx()
 
@@ -208,22 +209,28 @@ class Frontend():
                 _, mx, my, _, bstate = curses.getmouse()
             except curses.error:
                 return True
+            
+            if self.game_manager.game_status == GameStatus.PLAYING:
+                pos = self.mouse_to_cell(mx, my)
 
-            pos = self.mouse_to_cell(mx, my)
-            if not pos:
-                return True
-            r, c = pos
-            self.cur_r, self.cur_c = r, c
-            # Left-click (terminals vary: check CLICKED/PRESSED)
-            if bstate & curses.BUTTON1_CLICKED or bstate & curses.BUTTON1_PRESSED:
-                self.handle_left_click(r, c)
-                self.clicked_cells.append((r, c))  # add clicked cell
+                if not pos:
+                    return True
+                
+                r, c = pos
+                self.cur_r, self.cur_c = r, c
 
-            # Right-click
-            elif bstate & curses.BUTTON3_CLICKED or bstate & curses.BUTTON3_PRESSED:
-                self.handle_right_click(r, c)
+                # Left-click (terminals vary: check CLICKED/PRESSED)
+                if bstate & curses.BUTTON1_CLICKED or bstate & curses.BUTTON1_PRESSED:
+                    self.handle_left_click(r, c)
+                    self.clicked_cells.append((r, c))  # add clicked cell
 
-            self.draw_board()
+                # Right-click
+                elif bstate & curses.BUTTON3_CLICKED or bstate & curses.BUTTON3_PRESSED:
+                    self.handle_right_click(r, c)
+
+                # Redraw on valid board interaction
+                self.draw_board()
+
             return True
 
         # Keyboard navigation
